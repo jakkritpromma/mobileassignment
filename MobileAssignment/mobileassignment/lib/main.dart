@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
-
 }
 
 /*final List<Map<String, String>> items = [
@@ -21,10 +20,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         colorScheme: ColorScheme(
-          brightness: Brightness.light,  // Set to dark theme if black is preferred
+          brightness: Brightness.light,
+          // Set to dark theme if black is preferred
           primary: Colors.white,
-          onPrimary: Colors.white,  // Text or icon color on primary color
-          secondary: Colors.white,  // Optional, customize secondary color
+          onPrimary: Colors.white,
+          // Text or icon color on primary color
+          secondary: Colors.white,
+          // Optional, customize secondary color
           onSecondary: Colors.white,
           background: Colors.white,
           onBackground: Colors.white,
@@ -50,22 +52,31 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   // List to hold the items
   List<Map<String, String>> items = [];
+  List<int> fibonacciList = [];
 
   // Populate the list when the widget is initialized
   @override
   void initState() {
     super.initState();
-    _addItems();  // Call the function to add items to the list
+    _addItems(); // Call the function to add items to the list
   }
 
   void _addItems() {
-    // Example: Loop to add 10 items
-    for (int i = 1; i <= 10; i++) {
+    int a = 0, b = 1, c = 0;
+    for (int i = 0; i < 40; i++) {
+      fibonacciList.add(a);
+      int next = a + b;
+      a = b;
+      b = next;
+      c++;
+      if (c == 3) c = 0;
+
+      int fNumber = fibonacciList[i];
       items.add({
-        'text': 'Item $i',
+        'Index': 'Index: $i',
+        'Number': 'Number: $fNumber',
         'image': 'https://via.placeholder.com/150/0000FF/808080?text=Item+$i',
       });
     }
@@ -86,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Expanded(
               child: ListView.builder(
-                itemCount: 10,
+                itemCount: items.length,
                 itemBuilder: (context, index) {
                   var item = items[index];
                   return Padding(
@@ -97,16 +108,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Text on the left side
                         Expanded(
                           child: Text(
-                            item['text'] ?? '',
+                            item['Index'].toString() + ", " + item['Number'].toString(),
+                            //semanticsLabel: item['Number'] ?? '',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
                         // Image on the right side
-                        Image.network(
-                          item['image'] ?? '',
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+                        Container(
+                          width: 20.0,
+                          // Width of the square
+                          height: 20.0,
+                          // Height of the square (same as width for a square)
+                          decoration: BoxDecoration(
+                            color: Colors.white, // White background
+                            border: Border.all(
+                              color: Colors.black, // Black border
+                              width: 2.0, // Border width
+                            ),
+                          ),
                         ),
                       ],
                     ),
