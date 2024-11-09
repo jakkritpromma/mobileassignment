@@ -4,14 +4,6 @@ void main() {
   runApp(const MyApp());
 }
 
-/*final List<Map<String, String>> items = [
-  {'text': 'Item 1', 'image': 'https://via.placeholder.com/50'},
-  {'text': 'Item 2', 'image': 'https://via.placeholder.com/50'},
-  {'text': 'Item 3', 'image': 'https://via.placeholder.com/50'},
-  {'text': 'Item 4', 'image': 'https://via.placeholder.com/50'},
-  {'text': 'Item 5', 'image': 'https://via.placeholder.com/50'},
-];*/
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -19,14 +11,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        colorScheme: ColorScheme(
+        colorScheme: const ColorScheme(
           brightness: Brightness.light,
-          // Set to dark theme if black is preferred
           primary: Colors.white,
           onPrimary: Colors.white,
-          // Text or icon color on primary color
           secondary: Colors.white,
-          // Optional, customize secondary color
           onSecondary: Colors.white,
           background: Colors.white,
           onBackground: Colors.white,
@@ -70,14 +59,13 @@ class _MyHomePageState extends State<MyHomePage> {
       int next = a + b;
       a = b;
       b = next;
-      c++;
-      if (c == 3) c = 0;
 
       int fNumber = fibonacciList[i];
+      c = fNumber % 3;
       items.add({
         'Index': 'Index: $i',
         'Number': 'Number: $fNumber',
-        'image': 'https://via.placeholder.com/150/0000FF/808080?text=Item+$i',
+        'c': '$c',
       });
     }
     setState(() {
@@ -100,33 +88,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   var item = items[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  return Container(
+                    margin: const EdgeInsets.only(
+                        left: 10.0, top: 10.0, bottom: 10.0, right: 20.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        // Text on the left side
                         Expanded(
                           child: Text(
-                            item['Index'].toString() + ", " + item['Number'].toString(),
-                            //semanticsLabel: item['Number'] ?? '',
-                            style: TextStyle(fontSize: 16),
+                            "${item['Index']}, ${item['Number']}",
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
-                        // Image on the right side
-                        Container(
-                          width: 20.0,
-                          // Width of the square
-                          height: 20.0,
-                          // Height of the square (same as width for a square)
-                          decoration: BoxDecoration(
-                            color: Colors.white, // White background
-                            border: Border.all(
-                              color: Colors.black, // Black border
-                              width: 2.0, // Border width
-                            ),
-                          ),
-                        ),
+                        ConditionalContainer(cValue: item['c'].toString()),
                       ],
                     ),
                   );
@@ -137,5 +111,44 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+}
+
+class ConditionalContainer extends StatelessWidget {
+  final String cValue;
+
+  ConditionalContainer({required this.cValue});
+
+  @override
+  Widget build(BuildContext context) {
+    if (cValue == "0") {
+      return Container(
+          width: 20.0,
+          height: 20.0,
+          decoration: const BoxDecoration(
+            color: Colors.black,
+            shape: BoxShape.circle,
+          ));
+    } else if (cValue == "1") {
+      return Container(
+          width: 20.0,
+          height: 20.0,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: Colors.black,
+                width: 2.0,
+              )));
+    } else {
+      return Container(
+        width: 20.0,
+        height: 20.0,
+        alignment: Alignment.center,
+        child: const Text(
+          'X',
+          style: TextStyle(color: Colors.black, fontSize: 20),
+        ),
+      );
+    }
   }
 }
