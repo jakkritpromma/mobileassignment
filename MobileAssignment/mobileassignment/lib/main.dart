@@ -44,6 +44,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String>> items = [];
+  List<Map<String, String>> selectedItems = [];
   List<int> fibonacciList = [];
   List<Map<String, String>> selectedCircleItems = [];
   List<Map<String, String>> selectedSquareItems = [];
@@ -84,14 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kDebugMode) {
       print("tappedC: $tappedC");
     }
-    List<Map<String, String>> tappedItems;
-    if (tappedC == '0') {
-      tappedItems = selectedCircleItems;
-    } else if (tappedC == '1') {
-      tappedItems = selectedSquareItems;
-    } else {
-      tappedItems = selectedXItems;
-    }
+    List<Map<String, String>> filteredItems = selectedItems.where((item) {
+      String c = item['c'] ?? '';
+      return c == tappedC;
+    }).toList();
 
     showModalBottomSheet(
       context: context,
@@ -109,9 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               Expanded(
                 child: ListView.builder(
-                  itemCount: tappedItems.length,
+                  itemCount: filteredItems.length,
                   itemBuilder: (context, index) {
-                    var item = tappedItems[index];
+                    var item = filteredItems[index];
                     return Container(
                       child: GestureDetector(
                           onTap: () {
@@ -124,8 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 print("_isBottomSheetVisible: $_isBottomSheetVisible");
                                 print("index: $index recentIndex: $recentIndex");
                               }
-                              tappedItems.remove(item);
+                              selectedItems.remove(item);
                               items.insert(indexToAdd, item);
+                              recentIndex = int.parse(item['Index']!); //recently returned index
                               setState(() {});
                               Navigator.pop(context);
                             } catch (e) {
@@ -189,22 +187,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         onTap: () {
                           if (kDebugMode) {
                             print("_isBottomSheetVisible: $_isBottomSheetVisible");
+                            String itemCurIndex = item['Index'] ?? '';
+                            print("itemCurIndex: $itemCurIndex");
+                            print("index: $index recentIndex: $recentIndex");
                           }
                           try {
                             if (!_isBottomSheetVisible) {
                               String tappedC = item['c'] ?? '';
-                              if (tappedC == '0') {
-                                selectedCircleItems.add(item);
-                                selectedCircleItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
-                              } else if (tappedC == '1') {
-                                selectedSquareItems.add(item);
-                                selectedSquareItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
-                              } else {
-                                selectedXItems.add(item);
-                                selectedXItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
-                              }
+                              selectedItems.add(item);
+                              selectedItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
                               items.removeAt(index);
-                              recentIndex = int.parse(item['Index']!);
+                              recentIndex = int.parse(item['Index']!); //recently added index
                               setState(() {});
                               _showBottomSheet(context, tappedC);
                             }
@@ -213,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           }
                         },
                         child: Container(
-                          color: int.parse(item['Index'] ?? '') == recentIndex ? Colors.red : Colors.transparent,
+                          color: int.parse(item['Index']!) == recentIndex ? Colors.red : Colors.transparent,
                           child: Row(
                             children: [
                               Container(
