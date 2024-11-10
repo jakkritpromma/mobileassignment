@@ -46,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String>> items = [];
   List<int> fibonacciList = [];
   List<Map<String, String>> selectedCircleItems = [];
+  List<Map<String, String>> selectedSquareItems = [];
+  List<Map<String, String>> selectedXItems = [];
 
   @override
   void initState() {
@@ -74,10 +76,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isBottomSheetVisible = false;
 
-  void _showBottomSheet(BuildContext context) {
+  void _showBottomSheet(BuildContext context, String tappedC) {
     setState(() {
       _isBottomSheetVisible = true;
     });
+
+    print("tappedC: $tappedC");
+    List<Map<String, String>> tappedItems;
+    if (tappedC == '0') {
+      tappedItems = selectedCircleItems;
+    } else if (tappedC == '1') {
+      tappedItems = selectedSquareItems;
+    } else {
+      tappedItems = selectedXItems;
+    }
 
     showModalBottomSheet(
       context: context,
@@ -96,9 +108,9 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               Expanded(
                 child: ListView.builder(
-                  itemCount: selectedCircleItems.length,
+                  itemCount: tappedItems.length,
                   itemBuilder: (context, index) {
-                    var item = selectedCircleItems[index];
+                    var item = tappedItems[index];
                     return Container(
                       margin: const EdgeInsets.only(
                           left: 10.0, top: 20.0, right: 20.0),
@@ -111,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               print("siToAdd: $siToAdd");
                               print("indexToAdd : $indexToAdd ");
                             }
-                            selectedCircleItems.remove(item);
+                            tappedItems.remove(item);
                             items.insert(indexToAdd, item);
                             setState(() {});
                             Navigator.pop(context);
@@ -123,7 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Text('Index: ${item['Index']}, Number: ${item['Number']}',
+                              child: Text(
+                                'Index: ${item['Index']}, Number: ${item['Number']}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
@@ -169,18 +182,33 @@ class _MyHomePageState extends State<MyHomePage> {
                           print(
                               "_isBottomSheetVisible: $_isBottomSheetVisible");
                         }
-                        if (!_isBottomSheetVisible) {
-                          selectedCircleItems.add(item);
-                          items.removeAt(index);
-                          setState(() {});
-                          _showBottomSheet(context);
+                        try {
+                          if (!_isBottomSheetVisible) {
+                            String tappedC = item['c'] ?? '';
+                            if (tappedC == '0') {
+                              selectedCircleItems.add(item);
+                              selectedCircleItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!)));
+                            } else if (tappedC == '1') {
+                              selectedSquareItems.add(item);
+                              selectedSquareItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!)));
+                            } else {
+                              selectedXItems.add(item);
+                              selectedXItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!)));
+                            }
+                            items.removeAt(index);
+                            setState(() {});
+                            _showBottomSheet(context, tappedC);
+                          }
+                        } catch(e) {
+                          if (kDebugMode) print('Exception: $e');
                         }
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: Text('Index: ${item['Index']}, Number: ${item['Number']}',
+                            child: Text(
+                              'Index: ${item['Index']}, Number: ${item['Number']}',
                               style: const TextStyle(fontSize: 16),
                             ),
                           ),
