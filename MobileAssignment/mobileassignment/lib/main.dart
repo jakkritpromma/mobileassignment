@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool _isBottomSheetVisible = false;
-  int recentIndex = 0;
+  int recentIndex = -1;
   void _showBottomSheet(BuildContext context, String tappedC) {
     setState(() {
       _isBottomSheetVisible = true;
@@ -213,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           }
                         },
                         child: Container(
-                          color: Colors.white,
+                          color: int.parse(item['Index'] ?? '') == recentIndex ? Colors.red : Colors.transparent,
                           child: Row(
                             children: [
                               Container(
