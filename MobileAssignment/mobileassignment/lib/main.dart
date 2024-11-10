@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool _isBottomSheetVisible = false;
-
+  int recentIndex = 0;
   void _showBottomSheet(BuildContext context, String tappedC) {
     setState(() {
       _isBottomSheetVisible = true;
@@ -99,7 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
         return Container(
           height: MediaQuery.of(context).size.height / 2,
           decoration: const BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -119,11 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             try {
                               String siToAdd = item['Index'] ?? '';
                               int indexToAdd = int.parse(siToAdd);
-
                               if (kDebugMode) {
                                 print("siToAdd: $siToAdd");
                                 print("indexToAdd : $indexToAdd ");
                                 print("_isBottomSheetVisible: $_isBottomSheetVisible");
+                                print("index: $index recentIndex: $recentIndex");
                               }
                               tappedItems.remove(item);
                               items.insert(indexToAdd, item);
@@ -134,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             }
                           },
                           child: Container(
-                            color: Colors.white,
+                            color: int.parse(item['Index'] ?? '')== recentIndex ? Colors.green : Colors.transparent,
                             child: Row(
                               children: [
                                 Container(
@@ -205,6 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 selectedXItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
                               }
                               items.removeAt(index);
+                              recentIndex = int.parse(item['Index']!);
                               setState(() {});
                               _showBottomSheet(context, tappedC);
                             }
