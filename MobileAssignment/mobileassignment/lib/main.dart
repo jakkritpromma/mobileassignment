@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'ConditionalContainer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,16 +43,43 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+/*
+   List<int> numbers = [10, 20, 30, 40, 50];
+
+  // Step 1: Identify the index and the item to remove
+  int indexToRemove = 2; // Let's say you want to remove the item at index 2 (value 30)
+  int item = numbers[indexToRemove]; // Save the item
+
+  // Step 2: Remove the item from the list
+  numbers.removeAt(indexToRemove);
+
+  // Step 3: Add the item back at the same original index
+  numbers.insert(indexToRemove, item);
+
+  print(numbers); // Output: [10, 20, 30, 40, 50] List<int> numbers = [10, 20, 30, 40, 50];
+
+  // Step 1: Identify the index and the item to remove
+  int indexToRemove = 2; // Let's say you want to remove the item at index 2 (value 30)
+  int item = numbers[indexToRemove]; // Save the item
+
+  // Step 2: Remove the item from the list
+  numbers.removeAt(indexToRemove);
+
+  // Step 3: Add the item back at the same original index
+  numbers.insert(indexToRemove, item);
+
+  print(numbers); // Output: [10, 20, 30, 40, 50]
+  * */
+
 class _MyHomePageState extends State<MyHomePage> {
-  // List to hold the items
   List<Map<String, String>> items = [];
   List<int> fibonacciList = [];
+  List<Map<int, String>> deletedCircleItems = [];
 
-  // Populate the list when the widget is initialized
   @override
   void initState() {
     super.initState();
-    _addItems(); // Call the function to add items to the list
+    _addItems();
   }
 
   void _addItems() {
@@ -68,9 +98,64 @@ class _MyHomePageState extends State<MyHomePage> {
         'c': '$c',
       });
     }
+    setState(() {});
+  }
+
+  bool _isBottomSheetVisible = false;
+
+  void _showBottomSheet(BuildContext context) {
     setState(() {
-      // Trigger UI rebuild after the list is populated
+      _isBottomSheetVisible = true;
     });
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height / 2,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    var item = items[index];
+                    return Container(
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 20.0, right: 20.0),
+                      child:  GestureDetector(
+                        //onTap: _onRowClicked,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "${item['Index']}, ${item['Number']}",
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            ConditionalContainer(cValue: item['c'].toString()),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    _isBottomSheetVisible = false;
   }
 
   @override
@@ -78,6 +163,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        titleSpacing: 0,
+        centerTitle: true,  
       ),
       body: Center(
         child: Column(
@@ -91,17 +178,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   return Container(
                     margin: const EdgeInsets.only(
                         left: 10.0, top: 10.0, bottom: 10.0, right: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "${item['Index']}, ${item['Number']}",
-                            style: const TextStyle(fontSize: 16),
+                    child:  GestureDetector(
+                      onTap: () {
+                        if (kDebugMode) {
+                          print("_isBottomSheetVisible: $_isBottomSheetVisible");
+                        }
+                        if (!_isBottomSheetVisible ) {
+                          _showBottomSheet(context);
+                        } else {
+
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "${item['Index']}, ${item['Number']}",
+                              style: const TextStyle(fontSize: 16),
+                            ),
                           ),
-                        ),
-                        ConditionalContainer(cValue: item['c'].toString()),
-                      ],
+                          ConditionalContainer(cValue: item['c'].toString()),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -114,41 +213,4 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class ConditionalContainer extends StatelessWidget {
-  final String cValue;
 
-  ConditionalContainer({required this.cValue});
-
-  @override
-  Widget build(BuildContext context) {
-    if (cValue == "0") {
-      return Container(
-          width: 20.0,
-          height: 20.0,
-          decoration: const BoxDecoration(
-            color: Colors.black,
-            shape: BoxShape.circle,
-          ));
-    } else if (cValue == "1") {
-      return Container(
-          width: 20.0,
-          height: 20.0,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(
-                color: Colors.black,
-                width: 2.0,
-              )));
-    } else {
-      return Container(
-        width: 20.0,
-        height: 20.0,
-        alignment: Alignment.center,
-        child: const Text(
-          'X',
-          style: TextStyle(color: Colors.black, fontSize: 20),
-        ),
-      );
-    }
-  }
-}
