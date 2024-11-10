@@ -81,7 +81,9 @@ class _MyHomePageState extends State<MyHomePage> {
       _isBottomSheetVisible = true;
     });
 
-    print("tappedC: $tappedC");
+    if (kDebugMode) {
+      print("tappedC: $tappedC");
+    }
     List<Map<String, String>> tappedItems;
     if (tappedC == '0') {
       tappedItems = selectedCircleItems;
@@ -112,38 +114,48 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (context, index) {
                     var item = tappedItems[index];
                     return Container(
-                      margin: const EdgeInsets.only(
-                          left: 10.0, top: 20.0, right: 20.0),
                       child: GestureDetector(
-                        onTap: () {
-                          try {
-                            String siToAdd = item['Index'] ?? '';
-                            int indexToAdd = int.parse(siToAdd);
-                            if (kDebugMode) {
-                              print("siToAdd: $siToAdd");
-                              print("indexToAdd : $indexToAdd ");
+                          onTap: () {
+                            try {
+                              String siToAdd = item['Index'] ?? '';
+                              int indexToAdd = int.parse(siToAdd);
+
+                              if (kDebugMode) {
+                                print("siToAdd: $siToAdd");
+                                print("indexToAdd : $indexToAdd ");
+                                print("_isBottomSheetVisible: $_isBottomSheetVisible");
+                              }
+                              tappedItems.remove(item);
+                              items.insert(indexToAdd, item);
+                              setState(() {});
+                              Navigator.pop(context);
+                            } catch (e) {
+                              if (kDebugMode) print('Exception: $e');
                             }
-                            tappedItems.remove(item);
-                            items.insert(indexToAdd, item);
-                            setState(() {});
-                            Navigator.pop(context);
-                          } catch (e) {
-                            if (kDebugMode) print('Exception: $e');
-                          }
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Index: ${item['Index']}, Number: ${item['Number']}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
+                          },
+                          child: Container(
+                            color: Colors.white,
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.all(10),
+                                  child: Text(
+                                    'Index: ${item['Index']}, Number: ${item['Number']}',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                                      child: ConditionalContainer(cValue: item['c'].toString()),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            ConditionalContainer(cValue: item['c'].toString()),
-                          ],
-                        ),
-                      ),
+                          )),
                     );
                   },
                 ),
@@ -174,48 +186,55 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (context, index) {
                   var item = items[index];
                   return Container(
-                    margin: const EdgeInsets.only(
-                        left: 10.0, top: 10.0, bottom: 10.0, right: 20.0),
                     child: GestureDetector(
-                      onTap: () {
-                        if (kDebugMode) {
-                          print(
-                              "_isBottomSheetVisible: $_isBottomSheetVisible");
-                        }
-                        try {
-                          if (!_isBottomSheetVisible) {
-                            String tappedC = item['c'] ?? '';
-                            if (tappedC == '0') {
-                              selectedCircleItems.add(item);
-                              selectedCircleItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!)));
-                            } else if (tappedC == '1') {
-                              selectedSquareItems.add(item);
-                              selectedSquareItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!)));
-                            } else {
-                              selectedXItems.add(item);
-                              selectedXItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!)));
-                            }
-                            items.removeAt(index);
-                            setState(() {});
-                            _showBottomSheet(context, tappedC);
+                        onTap: () {
+                          if (kDebugMode) {
+                            print("_isBottomSheetVisible: $_isBottomSheetVisible");
                           }
-                        } catch(e) {
-                          if (kDebugMode) print('Exception: $e');
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Index: ${item['Index']}, Number: ${item['Number']}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
+                          try {
+                            if (!_isBottomSheetVisible) {
+                              String tappedC = item['c'] ?? '';
+                              if (tappedC == '0') {
+                                selectedCircleItems.add(item);
+                                selectedCircleItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
+                              } else if (tappedC == '1') {
+                                selectedSquareItems.add(item);
+                                selectedSquareItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
+                              } else {
+                                selectedXItems.add(item);
+                                selectedXItems.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
+                              }
+                              items.removeAt(index);
+                              setState(() {});
+                              _showBottomSheet(context, tappedC);
+                            }
+                          } catch (e) {
+                            if (kDebugMode) print('Exception: $e');
+                          }
+                        },
+                        child: Container(
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.all(10),
+                                child: Text(
+                                  'Index: ${item['Index']}, Number: ${item['Number']}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                                    child: ConditionalContainer(cValue: item['c'].toString()),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          ConditionalContainer(cValue: item['c'].toString()),
-                        ],
-                      ),
-                    ),
+                        )),
                   );
                 },
               ),
