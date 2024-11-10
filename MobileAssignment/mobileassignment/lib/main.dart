@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/foundation.dart';
 import 'ConditionalContainer.dart';
 
 void main() {
@@ -43,38 +42,10 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-/*
-   List<int> numbers = [10, 20, 30, 40, 50];
-
-  // Step 1: Identify the index and the item to remove
-  int indexToRemove = 2; // Let's say you want to remove the item at index 2 (value 30)
-  int item = numbers[indexToRemove]; // Save the item
-
-  // Step 2: Remove the item from the list
-  numbers.removeAt(indexToRemove);
-
-  // Step 3: Add the item back at the same original index
-  numbers.insert(indexToRemove, item);
-
-  print(numbers); // Output: [10, 20, 30, 40, 50] List<int> numbers = [10, 20, 30, 40, 50];
-
-  // Step 1: Identify the index and the item to remove
-  int indexToRemove = 2; // Let's say you want to remove the item at index 2 (value 30)
-  int item = numbers[indexToRemove]; // Save the item
-
-  // Step 2: Remove the item from the list
-  numbers.removeAt(indexToRemove);
-
-  // Step 3: Add the item back at the same original index
-  numbers.insert(indexToRemove, item);
-
-  print(numbers); // Output: [10, 20, 30, 40, 50]
-  * */
-
 class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String>> items = [];
   List<int> fibonacciList = [];
-  List<Map<int, String>> deletedCircleItems = [];
+  List<Map<String, String>> selectedCircleItems = [];
 
   @override
   void initState() {
@@ -93,8 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
       int fNumber = fibonacciList[i];
       c = fNumber % 3;
       items.add({
-        'Index': 'Index: $i',
-        'Number': 'Number: $fNumber',
+        'Index': '$i',
+        'Number': '$fNumber',
         'c': '$c',
       });
     }
@@ -125,20 +96,34 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               Expanded(
                 child: ListView.builder(
-                  itemCount: items.length,
+                  itemCount: selectedCircleItems.length,
                   itemBuilder: (context, index) {
-                    var item = items[index];
+                    var item = selectedCircleItems[index];
                     return Container(
                       margin: const EdgeInsets.only(
                           left: 10.0, top: 20.0, right: 20.0),
-                      child:  GestureDetector(
-                        //onTap: _onRowClicked,
+                      child: GestureDetector(
+                        onTap: () {
+                          try {
+                            String siToAdd = item['Index'] ?? '';
+                            int indexToAdd = int.parse(siToAdd);
+                            if (kDebugMode) {
+                              print("siToAdd: $siToAdd");
+                              print("indexToAdd : $indexToAdd ");
+                            }
+                            selectedCircleItems.remove(item);
+                            items.insert(indexToAdd, item);
+                            setState(() {});
+                            Navigator.pop(context);
+                          } catch (e) {
+                            if (kDebugMode) print('Exception: $e');
+                          }
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Text(
-                                "${item['Index']}, ${item['Number']}",
+                              child: Text('Index: ${item['Index']}, Number: ${item['Number']}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
@@ -164,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         titleSpacing: 0,
-        centerTitle: true,  
+        centerTitle: true,
       ),
       body: Center(
         child: Column(
@@ -178,23 +163,24 @@ class _MyHomePageState extends State<MyHomePage> {
                   return Container(
                     margin: const EdgeInsets.only(
                         left: 10.0, top: 10.0, bottom: 10.0, right: 20.0),
-                    child:  GestureDetector(
+                    child: GestureDetector(
                       onTap: () {
                         if (kDebugMode) {
-                          print("_isBottomSheetVisible: $_isBottomSheetVisible");
+                          print(
+                              "_isBottomSheetVisible: $_isBottomSheetVisible");
                         }
-                        if (!_isBottomSheetVisible ) {
+                        if (!_isBottomSheetVisible) {
+                          selectedCircleItems.add(item);
+                          items.removeAt(index);
+                          setState(() {});
                           _showBottomSheet(context);
-                        } else {
-
                         }
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: Text(
-                              "${item['Index']}, ${item['Number']}",
+                            child: Text('Index: ${item['Index']}, Number: ${item['Number']}',
                               style: const TextStyle(fontSize: 16),
                             ),
                           ),
@@ -212,5 +198,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
