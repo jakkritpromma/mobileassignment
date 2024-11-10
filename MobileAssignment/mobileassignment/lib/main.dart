@@ -123,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               }
                               selectedItems.remove(item);
                               items.insert(indexToAdd, item);
+                              items.sort((a, b) => int.parse(a['Index']!).compareTo(int.parse(b['Index']!))); //ascending order
                               recentIndex = int.parse(item['Index']!); //recently returned index
                               setState(() {});
                               Navigator.pop(context);
